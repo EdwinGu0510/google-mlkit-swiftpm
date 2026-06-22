@@ -50,13 +50,13 @@ let package = Package(
       targets: ["MLKitSegmentationSelfie", "MLKitSegmentationCommon", "MLImage", "MLKitVision", "Common"]),
     .library(
       name: "MLKitLanguageID",
-      targets: ["MLKitLanguageID", "MLKitNaturalLanguage", "MLKitXenoCommon", "MLKitCommon", "Common"]),
+      targets: ["MLKitLanguageID", "MLKitNaturalLanguage", "MLKitXenoCommon", "MLKitCommon", "GoogleToolboxForMac", "Common"]),
     .library(
       name: "MLKitTranslate",
-      targets: ["MLKitTranslate", "SSZipArchive", "MLKitNaturalLanguage", "MLKitXenoCommon", "MLKitCommon", "Common"]),
+      targets: ["MLKitTranslate", "SSZipArchive", "MLKitNaturalLanguage", "MLKitXenoCommon", "MLKitCommon", "GoogleToolboxForMac", "Common"]),
     .library(
       name: "MLKitSmartReply",
-      targets: ["MLKitSmartReply", "MLKitLanguageID", "MLKitNaturalLanguage", "MLKitXenoCommon", "MLKitCommon", "Common"]),
+      targets: ["MLKitSmartReply", "MLKitLanguageID", "MLKitNaturalLanguage", "MLKitXenoCommon", "MLKitCommon", "GoogleToolboxForMac", "Common"]),
   ],
   dependencies: [
     .package(url: "https://github.com/google/promises.git", exact: "2.4.0"),
@@ -64,7 +64,6 @@ let package = Package(
     .package(url: "https://github.com/google/GoogleUtilities.git", exact: "8.1.0"),
     .package(url: "https://github.com/google/gtm-session-fetcher.git", exact: "3.5.0"),
     .package(url: "https://github.com/firebase/nanopb.git", exact: "2.30910.0"),
-    .package(url: "https://github.com/google/google-toolbox-for-mac.git", from: "6.0.0"),
   ],
   targets: [
     // For debugging
@@ -152,8 +151,14 @@ let package = Package(
       name: "MLKitVision",
       url: "https://github.com/d-date/google-mlkit-swiftpm/releases/download/9.0.0-1/MLKitVision.xcframework.zip",
       checksum: "b26f8c96d1e12515b990fca0b2237d60363d7bddc925d5ec61d7ee7d8b5e83c3"),
-    // GoogleToolboxForMac is now built from source via google/google-toolbox-for-mac
-    // to avoid ITMS-91065 missing signature errors caused by the unsigned binary xcframework.
+    // GoogleToolboxForMac is built from source to avoid ITMS-91065 missing signature errors.
+    // Sources are vendored from google/google-toolbox-for-mac v6.0.0.
+    .target(
+      name: "GoogleToolboxForMac",
+      path: "Sources/GoogleToolboxForMac",
+      publicHeadersPath: ".",
+      linkerSettings: [.linkedLibrary("z")]
+    ),
     .binaryTarget(
       name: "MLKitTextRecognition",
       url: "https://github.com/d-date/google-mlkit-swiftpm/releases/download/9.0.0-1/MLKitTextRecognition.xcframework.zip",
@@ -254,9 +259,7 @@ let package = Package(
       name: "Common",
       dependencies: [
         "MLKitCommon",
-        .product(name: "GTMLogger", package: "google-toolbox-for-mac"),
-        .product(name: "GTMNSData_zlib", package: "google-toolbox-for-mac"),
-        .product(name: "GTMStringEncoding", package: "google-toolbox-for-mac"),
+        "GoogleToolboxForMac",
         .product(name: "GULAppDelegateSwizzler", package: "GoogleUtilities"),
         .product(name: "GULEnvironment", package: "GoogleUtilities"),
         .product(name: "GULLogger", package: "GoogleUtilities"),
